@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загрузка...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #121212;
+            color: #e0e0e0;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+        }
+        .error {
+            color: #cf6679;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="message-container">
+        <h1>Загрузка...</h1>
+    </div>
+
+    <script>
+        (function() {
+            // Получаем параметры из URL-адреса
+            const urlParams = new URLSearchParams(window.location.search);
+            // Ищем параметр с именем 'data'
+            const base64Data = urlParams.get('data');
+
+            const messageContainer = document.getElementById('message-container');
+
+            if (base64Data) {
+                try {
+                    // Декодируем строку из Base64
+                    const decodedUrl = atob(base64Data);
+
+                    // Проверяем, является ли результат валидным URL
+                    if (decodedUrl.startsWith('http://') || decodedUrl.startsWith('https://')) {
+                        // Если да, перенаправляем пользователя.
+                        // window.location.replace() не сохраняет текущую страницу в истории браузера,
+                        // делая переход более "секретным".
+                        window.location.replace(decodedUrl);
+                    } else {
+                        messageContainer.innerHTML = '<h1 class="error">Ошибка: Некорректная ссылка для перенаправления.</h1>';
+                    }
+                } catch (e) {
+                    // Если произошла ошибка при декодировании (например, неверный Base64 ключ)
+                    console.error('Ошибка декодирования Base64:', e);
+                    messageContainer.innerHTML = '<h1 class="error">Ошибка: Неверный ключ в ссылке.</h1>';
+                }
+            } else {
+                // Если параметр 'data' не найден, показываем приветственное сообщение
+                messageContainer.innerHTML = '<h1>Посредник ссылок</h1><p>Используйте параметр ?data= для перенаправления.</p>';
+            }
+        })();
+    </script>
+
+</body>
+</html>
